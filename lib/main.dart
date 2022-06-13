@@ -21,6 +21,7 @@ void open({
   Size size = const Size(400, 600),
   Offset position = const Offset(0, 0),
   bool focusable = false,
+  bool draggable = true,
 }) {
   _api.open(
     entryPoint,
@@ -29,6 +30,7 @@ void open({
     position.dx.toInt(),
     position.dy.toInt(),
     focusable,
+    draggable,
   );
 }
 

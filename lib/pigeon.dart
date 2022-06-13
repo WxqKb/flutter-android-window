@@ -11,11 +11,16 @@ import 'package:pigeon/pigeon.dart';
 abstract class MainApi {
   @async
   bool canDrawOverlays();
+
   @async
   void requestPermission();
+
   @async
   Map post(Map message);
-  void open(String entry, int width, int height, int x, int y, bool focusable);
+
+  void open(String entry, int width, int height, int x, int y, bool focusable,
+      bool draggable);
+
   void close();
 }
 
@@ -23,11 +28,17 @@ abstract class MainApi {
 abstract class AndroidWindowApi {
   @async
   Map post(Map message);
+
   void resize(int width, int height);
+
   void setPosition(int x, int y);
+
   void dragStart();
+
   void dragEnd();
+
   void close();
+
   void launchApp();
 }
 

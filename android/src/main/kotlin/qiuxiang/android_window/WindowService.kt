@@ -15,6 +15,7 @@ class WindowService : android.app.Service() {
   private lateinit var androidWindow: AndroidWindow
   private var running = false
   private val channelId = "foreground"
+  private var draggable = true
 
   override fun onBind(intent: Intent): IBinder? {
     return null
@@ -28,7 +29,8 @@ class WindowService : android.app.Service() {
   override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
     if (!running) {
       engine = FlutterEngine(application)
-      (application as AndroidWindowApplication).androidWindowMessenger = engine.dartExecutor.binaryMessenger
+      (application as AndroidWindowApplication).androidWindowMessenger =
+        engine.dartExecutor.binaryMessenger
       val entry = intent.getStringExtra("entry") ?: "androidWindow"
       val entryPoint = DartExecutor.DartEntrypoint(findAppBundlePath(), entry)
       engine.dartExecutor.executeDartEntrypoint(entryPoint)
@@ -38,7 +40,8 @@ class WindowService : android.app.Service() {
       val height = intent.getIntExtra("height", 600)
       val x = intent.getIntExtra("x", 0)
       val y = intent.getIntExtra("y", 0)
-      androidWindow = AndroidWindow(this, focusable, width, height, x, y, engine)
+      draggable = intent.getBooleanExtra("draggable", true)
+      androidWindow = AndroidWindow(this, focusable, draggable, width, height, x, y, engine)
       androidWindow.open()
       startForeground(1, getNotification())
       running = true
@@ -48,7 +51,11 @@ class WindowService : android.app.Service() {
 
   private fun getNotification(): Notification {
     return if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
-      val channel = NotificationChannel(channelId, "Window Service", NotificationManager.IMPORTANCE_DEFAULT)
+      val channel = NotificationChannel(
+        channelId,
+        "Window Service",
+        NotificationManager.IMPORTANCE_DEFAULT
+      )
       val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
       notificationManager.createNotificationChannel(channel)
       Notification.Builder(this, channel.id)

@@ -26,6 +26,9 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+    debugPrint('$height >>>>>> $width');
     android_window.setHandler((name, data) async {
       switch (name) {
         case 'hello':
@@ -51,8 +54,9 @@ class HomePage extends StatelessWidget {
           ElevatedButton(
             onPressed: () => android_window.open(
               size: const Size(600, 600),
-              position: const Offset(200, 200),
+              position: Offset(width - 600 - 16, height - 600 - 16),
               focusable: true,
+              draggable: false,
             ),
             child: const Text('Open android window'),
           ),

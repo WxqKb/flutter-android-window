@@ -16,6 +16,7 @@ import kotlin.math.roundToInt
 class AndroidWindow(
   val service: Service,
   focusable: Boolean,
+  private val draggable: Boolean,
   width: Int,
   height: Int,
   private val x: Int,
@@ -29,7 +30,8 @@ class AndroidWindow(
   private var dragging = false
   private lateinit var flutterView: FlutterView
   private var windowManager = service.getSystemService(Service.WINDOW_SERVICE) as WindowManager
-  private val inflater = service.getSystemService(Service.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+  private val inflater =
+    service.getSystemService(Service.LAYOUT_INFLATER_SERVICE) as LayoutInflater
   private val metrics = DisplayMetrics()
 
   @SuppressLint("InflateParams")
@@ -58,34 +60,38 @@ class AndroidWindow(
     windowManager.defaultDisplay.getMetrics(metrics)
     flutterView = FlutterView(inflater.context, FlutterSurfaceView(inflater.context, true))
     flutterView.attachToFlutterEngine(engine)
-    @Suppress("ClickableViewAccessibility")
-    flutterView.setOnTouchListener { _, event ->
-      when (event.action) {
-        MotionEvent.ACTION_MOVE -> {
-          if (dragging) {
-            setPosition(
-              initialX + (event.rawX - startX).roundToInt(),
-              initialY + (event.rawY - startY).roundToInt()
-            )
-          } else {
-            startX = event.rawX
-            startY = event.rawY
-            initialX = layoutParams.x
-            initialY = layoutParams.y
+    if (draggable) {
+      @Suppress("ClickableViewAccessibility")
+      flutterView.setOnTouchListener { _, event ->
+        when (event.action) {
+          MotionEvent.ACTION_MOVE -> {
+            if (dragging) {
+              setPosition(
+                initialX + (event.rawX - startX).roundToInt(),
+                initialY + (event.rawY - startY).roundToInt()
+              )
+            } else {
+              startX = event.rawX
+              startY = event.rawY
+              initialX = layoutParams.x
+              initialY = layoutParams.y
+            }
+          }
+          MotionEvent.ACTION_DOWN -> {
+            layoutParams.flags =
+              layoutParams.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv()
+            windowManager.updateViewLayout(rootView, layoutParams)
           }
         }
-        MotionEvent.ACTION_DOWN -> {
-          layoutParams.flags = layoutParams.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv()
-          windowManager.updateViewLayout(rootView, layoutParams)
-        }
+        false
       }
-      false
     }
     @Suppress("ClickableViewAccessibility")
     rootView.setOnTouchListener { _, event ->
       when (event.action) {
         MotionEvent.ACTION_DOWN -> {
-          layoutParams.flags = layoutParams.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+          layoutParams.flags =
+            layoutParams.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
           windowManager.updateViewLayout(rootView, layoutParams)
           true
         }

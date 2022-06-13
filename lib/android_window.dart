@@ -43,8 +43,8 @@ class AndroidWindow extends StatefulWidget {
   ///
   /// Receive message from main app.
   static void setHandler(
-    Future<Object?> Function(String name, Object? data) handler,
-  ) {
+      Future<Object?> Function(String name, Object? data) handler,
+      ) {
     AndroidWindowHandler.setup(_Handler(handler));
   }
 }
