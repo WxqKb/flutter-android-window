@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:android_window/android_window.dart';
 import 'package:flutter/material.dart';
 
@@ -32,15 +34,18 @@ class HomePage extends StatelessWidget {
         clipBehavior: Clip.hardEdge,
         borderRadius: const BorderRadius.all(Radius.circular(8)),
         child: Scaffold(
-          backgroundColor: Colors.grey.withOpacity(0.8),
+          backgroundColor: Colors.white.withOpacity(1),
           body: Padding(
             padding: const EdgeInsets.all(8),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const TextField(),
-                const ElevatedButton(
-                  onPressed: AndroidWindow.close,
+                ElevatedButton(
+                  onPressed: () {
+                    AndroidWindow.close();
+                    exit(0);
+                  },
                   child: Text('Close'),
                 ),
                 ElevatedButton(
