@@ -37,8 +37,9 @@ class WindowService : android.app.Service() {
             engine.dartExecutor.executeDartEntrypoint(entryPoint)
 
             val focusable = intent.getBooleanExtra("focusable", false)
-            val width = intent.getIntExtra("width", 400)
-            val height = intent.getIntExtra("height", 600)
+            val width = intent.getIntExtra("width", 600)
+            val height = intent.getIntExtra("height", 800)
+
             val x = intent.getIntExtra("x", 0)
             val y = intent.getIntExtra("y", 0)
             draggable = intent.getBooleanExtra("draggable", true)
